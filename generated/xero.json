@@ -1,0 +1,115 @@
+{
+  "app": "Xero",
+  "website": "https://developer.xero.com",
+  "summary": "Xero uses OAuth 2.0 with granular scopes for API access, requiring a Xero user account to register and manage applications. Certain sensitive scopes, such as Bank Feeds, Finance API, and Practice Manager, require additional certification or partnership agreements.",
+  "verdict": {
+    "difficulty": 3,
+    "label": "Moderate",
+    "time_to_first_connection": "not published",
+    "time_to_production": "not published",
+    "approval_required": "Certain scopes like payment services, bank feeds, finance API, account data API, and practice manager API require additional certification, agreements, or registering as an app partner."
+  },
+  "prerequisites": [
+    {
+      "text": "Sign up for a free Xero account",
+      "evidence": "docs",
+      "source": "https://developer.xero.com/documentation/getting-started-guide/"
+    },
+    {
+      "text": "Enable the Xero demo company",
+      "evidence": "docs",
+      "source": "https://developer.xero.com/documentation/getting-started-guide/"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Create a Xero Account",
+      "detail": "Sign up for a free Xero account if you do not already have one.",
+      "owner": "you",
+      "evidence": "docs",
+      "source": "https://developer.xero.com/documentation/getting-started-guide/"
+    },
+    {
+      "title": "Enable the Demo Company",
+      "detail": "Enable the Xero demo company to use for testing and exploration.",
+      "owner": "you",
+      "evidence": "docs",
+      "source": "https://developer.xero.com/documentation/getting-started-guide/"
+    },
+    {
+      "title": "Add an OAuth 2.0 Application",
+      "detail": "Add your OAuth 2.0 application, which will prompt you to log into Xero first.",
+      "owner": "you",
+      "evidence": "docs",
+      "source": "https://developer.xero.com/documentation/getting-started-guide/"
+    },
+    {
+      "title": "Determine Required Scopes",
+      "detail": "Identify and request the minimum granular scopes required for your specific integration actions.",
+      "owner": "agent",
+      "evidence": "docs",
+      "source": "https://developer.xero.com/documentation/guides/oauth2/scopes/"
+    },
+    {
+      "title": "Request Offline Access If Needed",
+      "detail": "Include the offline_access scope if your application requires a refresh token.",
+      "owner": "agent",
+      "evidence": "docs",
+      "source": "https://developer.xero.com/documentation/guides/oauth2/scopes/"
+    }
+  ],
+  "approval": {
+    "summary": "Certain scopes and API categories trigger additional certification, agreements, or application partner status before they can be used in production.",
+    "triggers": [
+      "Payment services scope (paymentservices)",
+      "Bank feeds scope (bankfeedsv2)",
+      "Finance API scopes",
+      "Account Data API scopes",
+      "Practice Manager API scopes",
+      "eInvoicing scope"
+    ],
+    "typical_wait": "not published",
+    "evidence": "docs",
+    "source": "https://developer.xero.com/documentation/guides/oauth2/scopes/"
+  },
+  "blockers": [
+    {
+      "problem": "Cannot remove scopes from an existing access token directly.",
+      "fix": "Revoke the token and start the authentication flow again to reduce consented scopes.",
+      "evidence": "docs",
+      "source": "https://developer.xero.com/documentation/guides/oauth2/scopes/"
+    }
+  ],
+  "agent_can": [
+    "Determine minimum required scopes",
+    "Prepare integration code using SDKs and sample apps"
+  ],
+  "you_must": [
+    "Log into Xero to register and add an OAuth 2.0 application",
+    "Handle user consent and authorization flows"
+  ],
+  "uncertain": [
+    "Specific account types and app types configuration rules",
+    "Redirect URI rules and constraints",
+    "Client secret management details",
+    "Exact reviewer identity and published wait times for approvals",
+    "Rate limits and connection limits before approval"
+  ],
+  "sources": [
+    {
+      "title": "Xero Getting Started Guide",
+      "url": "https://developer.xero.com/documentation/getting-started-guide/"
+    },
+    {
+      "title": "Xero OAuth 2.0 Scopes Guide",
+      "url": "https://developer.xero.com/documentation/guides/oauth2/scopes/"
+    }
+  ],
+  "slug": "xero",
+  "last_checked": "2026-11-03",
+  "origin": "Generated live by the research agent (gemini-3.5-flash-lite) - not reviewed by a person",
+  "composio": {
+    "managed_oauth": false,
+    "note": "Not in Composio's managed OAuth list (checked 2026-11-03), so you likely need to bring your own OAuth app. Confirm on the toolkit's page."
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "app": "Google (Gmail API)",
+  "slug": "google-gmail",
+  "website": "https://developers.google.com/gmail/api",
+  "last_checked": "2026-11-03",
+  "origin": "Seed guide: researched by an agent from official docs, reviewed by a person",
+  "summary": "Google is the hard case. Creating the OAuth client takes minutes, but most useful Gmail scopes are restricted. Before outside users can connect, Google requires app verification, and apps that access restricted data from a server need an annual security assessment by a Google-approved third party. Plan for weeks to months, not hours.",
+  "verdict": {
+    "difficulty": 5,
+    "label": "Hard",
+    "time_to_first_connection": "30-60 minutes (testing with your own accounts)",
+    "time_to_production": "Up to 10 days for sensitive scopes; several months possible for restricted Gmail scopes",
+    "approval_required": "Yes, for sensitive and restricted scopes"
+  },
+  "composio": {
+    "managed_oauth": true,
+    "note": "Composio provides a managed OAuth app for Gmail. Bring your own only if you need your brand on the consent screen or custom scopes, and then you take on Google's verification yourself."
+  },
+  "prerequisites": [
+    {"text": "A Google Cloud project with the Gmail API enabled and the OAuth consent screen configured.", "evidence": "docs", "source": "https://support.google.com/cloud/answer/13463073"},
+    {"text": "A public homepage and a privacy policy on a domain you own, verified in Google Search Console by a project Owner or Editor.", "evidence": "docs", "source": "https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification"},
+    {"text": "A justification for every sensitive or restricted scope, and a video showing how your app uses the data.", "evidence": "docs", "source": "https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification"}
+  ],
+  "steps": [
+    {"title": "Choose the narrowest scopes", "detail": "Google requires the least access needed: an app that only reads mail must not ask for read-write-delete. Check each Gmail scope's category (non-sensitive, sensitive, restricted).", "owner": "agent", "evidence": "docs", "source": "https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification"},
+    {"title": "Create the project and OAuth client", "detail": "In Google Cloud Console: create a project, enable the Gmail API, configure the consent screen, then create an OAuth client ID with your redirect URI.", "owner": "you", "evidence": "docs", "source": "https://support.google.com/cloud/answer/13463073"},
+    {"title": "Test with your own accounts first", "detail": "You can build and test while verification is pending; users see an 'unverified app' screen until you pass.", "owner": "you", "evidence": "docs", "source": "https://support.google.com/cloud/answer/7454865"},
+    {"title": "Verify your domain", "detail": "Verify ownership of every authorized domain in Search Console with an account that is Owner or Editor on the project.", "owner": "you", "evidence": "docs", "source": "https://support.google.com/cloud/answer/7454865"},
+    {"title": "Prepare the verification package", "detail": "Homepage, privacy policy that matches how you use the data, scope justifications and a demo video.", "owner": "agent", "evidence": "docs", "source": "https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification"},
+    {"title": "Submit in the Verification Center", "detail": "Declare all scopes on the Data Access page and submit. Restricted scopes add a security assessment and re-verification every year.", "owner": "you", "evidence": "docs", "source": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification"}
+  ],
+  "approval": {
+    "summary": "Sensitive scopes need Google's OAuth verification; restricted scopes (most Gmail read/modify access) need a deeper review, and apps that reach restricted data through a third-party server need an annual security assessment by a Google-approved assessor. Some uses are exempt: personal use, development/testing/staging projects, internal-only apps in one Workspace organization, and domain-wide installation.",
+    "triggers": ["Any sensitive scope", "Any restricted scope (most Gmail scopes)", "Showing your app name and logo needs brand verification even for non-sensitive scopes"],
+    "typical_wait": "Sensitive: up to 10 days. Restricted: several months possible, plus yearly re-verification",
+    "evidence": "docs",
+    "source": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification"
+  },
+  "blockers": [
+    {"problem": "Users see an 'unverified app' warning.", "fix": "Expected until verification passes. Make sure the scopes in your code exactly match the consent screen configuration; a mismatch also triggers the warning.", "evidence": "docs", "source": "https://support.google.com/cloud/answer/7454865"},
+    {"problem": "Verification rejected for over-broad scopes.", "fix": "Switch to the narrowest scope that supports your feature and explain the need in your justification.", "evidence": "docs", "source": "https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification"},
+    {"problem": "The security assessment cost and timeline.", "fix": "Budget for a paid third-party assessment and yearly renewal before you commit to restricted Gmail scopes, or use Composio's managed app.", "evidence": "docs", "source": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification"}
+  ],
+  "agent_can": ["Map your feature to the narrowest Gmail scopes and their categories", "Draft scope justifications and the privacy-policy sections Google checks", "Write the demo-video script and a submission checklist"],
+  "you_must": ["Create the Cloud project and OAuth client while signed in", "Verify domain ownership in Search Console", "Record the demo video, submit, and answer Google's reviewers", "Arrange and pay for the security assessment if you use restricted scopes"],
+  "uncertain": ["The user cap and refresh-token lifetime for apps in testing mode are commonly reported but were not confirmed in the pages read for this guide.", "Security assessment price varies by assessor and was not checked."],
+  "sources": [
+    {"title": "OAuth App Verification Help Center", "url": "https://support.google.com/cloud/answer/13463073"},
+    {"title": "Sensitive scope verification", "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification"},
+    {"title": "Restricted scope verification", "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification"},
+    {"title": "Unverified apps", "url": "https://support.google.com/cloud/answer/7454865"}
+  ]
+}

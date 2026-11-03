@@ -1,0 +1,47 @@
+{
+  "app": "Spotify",
+  "slug": "spotify",
+  "website": "https://developer.spotify.com",
+  "last_checked": "2026-11-03",
+  "origin": "Seed guide: researched by an agent from official docs, reviewed by a person",
+  "summary": "Spotify looks easy but has a hard ceiling. New apps start in development mode, limited to 5 allowlisted users, and the owner needs Spotify Premium. Since 15 May 2025, Spotify accepts extended quota applications only from registered organizations with at least 250k monthly active users, so most new agent products can never leave development mode.",
+  "verdict": {
+    "difficulty": 4,
+    "label": "Blocked for most",
+    "time_to_first_connection": "15-30 minutes",
+    "time_to_production": "Not possible for individuals or small products; for qualifying businesses, a partner application and app review",
+    "approval_required": "Yes, to serve more than 5 users"
+  },
+  "composio": {
+    "managed_oauth": false,
+    "note": "Spotify is not in Composio's managed OAuth list, so you must bring your own OAuth app."
+  },
+  "prerequisites": [
+    {"text": "A Spotify Premium account for the app owner (development-mode apps do not work otherwise).", "evidence": "docs", "source": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes"},
+    {"text": "To go beyond 5 users: a legally registered business with 250k+ monthly active users.", "evidence": "docs", "source": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes"}
+  ],
+  "steps": [
+    {"title": "Create an app in the Spotify Developer Dashboard", "detail": "Add your redirect URI and copy the client ID and secret.", "owner": "you", "evidence": "docs", "source": "https://developer.spotify.com/documentation/web-api/concepts/apps"},
+    {"title": "Allowlist each test user", "detail": "Add every user to the app's allowlist. Users who are not allowlisted can sometimes log in but get 403 errors on API calls.", "owner": "you", "evidence": "docs", "source": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes"},
+    {"title": "Check eligibility before planning a launch", "detail": "Compare your organization against the extended-quota criteria before promising Spotify support to users.", "owner": "agent", "evidence": "docs", "source": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes"},
+    {"title": "If eligible: partner application, then quota extension", "detail": "After the Partner Application is approved, ask Spotify to move the app to extended quota mode; the app review team checks it against the Developer Policy.", "owner": "you", "evidence": "docs", "source": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes"}
+  ],
+  "approval": {
+    "summary": "Development mode needs no approval but caps you at 5 users. Extended quota requires an approved Partner Application (organizations only, 250k+ MAU) and an app review against Spotify's Developer Policy.",
+    "triggers": ["More than 5 users", "Higher rate limits"],
+    "typical_wait": "Not published",
+    "evidence": "docs",
+    "source": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes"
+  },
+  "blockers": [
+    {"problem": "Users get 403 errors after logging in.", "fix": "They are not on the allowlist, or the app already has its 5 development-mode users.", "evidence": "docs", "source": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes"},
+    {"problem": "You are an individual or early-stage startup and need more than 5 users.", "fix": "No supported path today. Tell users the integration is limited, or scope the agent to the owner's own account.", "evidence": "docs", "source": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes"}
+  ],
+  "agent_can": ["Check your eligibility against the extended-quota criteria", "Manage the allowlist checklist", "Explain the 5-user limit to your users"],
+  "you_must": ["Hold Spotify Premium and create the app while signed in", "Add each user to the allowlist", "Apply as an organization if you qualify"],
+  "uncertain": ["Review time for Partner Applications is not published.", "Older third-party articles cite a 25-user limit; the current docs say 5."],
+  "sources": [
+    {"title": "Quota modes - Spotify for Developers", "url": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes"},
+    {"title": "Composio managed OAuth app directory", "url": "https://docs.composio.dev/toolkits/managed-auth"}
+  ]
+}

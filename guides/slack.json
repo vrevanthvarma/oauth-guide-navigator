@@ -1,0 +1,48 @@
+{
+  "app": "Slack",
+  "slug": "slack",
+  "website": "https://api.slack.com",
+  "last_checked": "2026-11-03",
+  "origin": "Seed guide: researched by an agent from official docs, reviewed by a person",
+  "summary": "Slack is medium difficulty. A new app installs only in its own workspace; to let other workspaces connect you must build an OAuth flow and turn on distribution, which needs no review. Slack Marketplace listing is optional but is reviewed, and some workspaces only allow Marketplace apps or need admin approval.",
+  "verdict": {
+    "difficulty": 3,
+    "label": "Medium",
+    "time_to_first_connection": "30-60 minutes",
+    "time_to_production": "Same day for unlisted distribution; Marketplace listing takes Slack's posted review time and needs 10+ active workspaces first",
+    "approval_required": "Only for Marketplace listing"
+  },
+  "composio": {
+    "managed_oauth": true,
+    "note": "Composio provides a managed OAuth app for Slack. Your own app lets you control the bot name, scopes and Marketplace listing."
+  },
+  "prerequisites": [
+    {"text": "A Slack workspace where you can create and install apps.", "evidence": "docs", "source": "https://docs.slack.dev/app-management/distribution/"},
+    {"text": "HTTPS for every URL a distributed app uses, including the redirect URL.", "evidence": "docs", "source": "https://docs.slack.dev/app-management/distribution/"}
+  ],
+  "steps": [
+    {"title": "Create the app", "detail": "Create the app in Slack's app dashboard; it is tied to one workspace at first.", "owner": "you", "evidence": "docs", "source": "https://docs.slack.dev/app-management/distribution/"},
+    {"title": "Add scopes and the redirect URL", "detail": "Add bot and user scopes and your redirect URL (Composio's callback URL if you use Composio custom auth).", "owner": "agent", "evidence": "docs", "source": "https://docs.slack.dev/authentication/installing-with-oauth"},
+    {"title": "Turn on distribution", "detail": "Complete the distribution checklist so other workspaces can install via OAuth. Unlisted distribution needs no Slack review.", "owner": "you", "evidence": "docs", "source": "https://docs.slack.dev/app-management/distribution/"},
+    {"title": "Test on a second workspace", "detail": "Install, onboard and uninstall on a workspace that is not your development workspace.", "owner": "you", "evidence": "docs", "source": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide/"},
+    {"title": "Optional: submit to the Slack Marketplace", "detail": "Only after the app runs on 10 or more active workspaces; Slack returns apps that are not ready.", "owner": "you", "evidence": "docs", "source": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide/"}
+  ],
+  "approval": {
+    "summary": "Unlisted distribution has no review. Marketplace listing is reviewed against Slack's guidelines; review time varies with volume and is shown on your app's submission page, and Slack cannot speed it up.",
+    "triggers": ["Listing in the Slack Marketplace", "Workspaces that only allow Marketplace apps or require admin approval"],
+    "typical_wait": "Unlisted: none. Marketplace: see the estimate on your submission page",
+    "evidence": "docs",
+    "source": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide/"
+  },
+  "blockers": [
+    {"problem": "A customer's workspace will not let users install your app.", "fix": "The workspace requires admin approval or Marketplace-only apps. Ask their admin to approve, keep scopes minimal, or get listed.", "evidence": "docs", "source": "https://docs.slack.dev/app-management/distribution/"},
+    {"problem": "You cannot submit to the Marketplace.", "fix": "Slack blocks submission until the app is installed on 10+ workspaces active in the last 28 days.", "evidence": "docs", "source": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide/"}
+  ],
+  "agent_can": ["Pick the bot and user scopes for your use case", "Prepare the distribution checklist and Marketplace listing text", "Check your redirect URLs use HTTPS"],
+  "you_must": ["Create the app and install it while signed in", "Turn on distribution and test on a second workspace", "Get 10+ active workspaces before Marketplace submission"],
+  "uncertain": ["Current Marketplace review time is shown only inside each app's submission page and was not observed for this guide."],
+  "sources": [
+    {"title": "App lifecycle & distribution - Slack", "url": "https://docs.slack.dev/app-management/distribution/"},
+    {"title": "Slack Marketplace review process", "url": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide/"}
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "app": "Notion",
+  "website": "https://www.notion.so",
+  "summary": "Register and configure a public Notion OAuth connection to integrate workspace content and APIs for external users.",
+  "verdict": {
+    "difficulty": 3,
+    "label": "Medium",
+    "time_to_first_connection": "Minutes",
+    "time_to_production": "Not published",
+    "approval_required": "Notion security review is required only if listing on the Marketplace; standard OAuth can be used without listing."
+  },
+  "prerequisites": [
+    {
+      "text": "A Notion account with access to the Developer portal to create a public connection.",
+      "evidence": "docs",
+      "source": "https://developers.notion.com/guides/get-started/authorization"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Create a public connection",
+      "detail": "Log into the Developer portal and register a new public connection to obtain the client ID and client secret.",
+      "owner": "you",
+      "evidence": "docs",
+      "source": "https://developers.notion.com/guides/get-started/authorization"
+    },
+    {
+      "title": "Configure redirect URIs",
+      "detail": "Specify the required redirect URI(s) under the OAuth configuration section in the Developer portal.",
+      "owner": "you",
+      "evidence": "docs",
+      "source": "https://developers.notion.com/guides/get-started/authorization"
+    },
+    {
+      "title": "Build the OAuth authorization URL",
+      "detail": "Construct the authorization request pointing users to Notion's OAuth endpoint, supplying the client ID and redirect URI.",
+      "owner": "agent",
+      "evidence": "docs",
+      "source": "https://developers.notion.com/guides/get-started/authorization"
+    },
+    {
+      "title": "Implement the token exchange endpoint",
+      "detail": "Write code to handle the authorization code callback, exchanging it via POST to the token endpoint using HTTP Basic Auth for client credentials.",
+      "owner": "agent",
+      "evidence": "docs",
+      "source": "https://developers.notion.com/guides/get-started/authorization"
+    },
+    {
+      "title": "Handle rate limiting and errors",
+      "detail": "Incorporate logic to respect rate limit headers (HTTP 429 / 529), manage retry-after values, and gracefully catch user cancellations or missing redirect URIs.",
+      "owner": "agent",
+      "evidence": "docs",
+      "source": "https://developers.notion.com/reference/request-limits"
+    }
+  ],
+  "approval": {
+    "summary": "Required only if you wish to list your public connection on the Notion Marketplace.",
+    "triggers": [
+      "Marketplace listing submission"
+    ],
+    "typical_wait": "Not published",
+    "evidence": "docs",
+    "source": "https://developers.notion.com/guides/get-started/authorization"
+  },
+  "blockers": [
+    {
+      "problem": "User cancels the OAuth flow, resulting in an access_denied error redirected to your redirect URI.",
+      "fix": "Build connection error handling to catch user cancellation gracefully.",
+      "evidence": "docs",
+      "source": "https://developers.notion.com/guides/get-started/authorization"
+    },
+    {
+      "problem": "Missing redirect_uri in token exchange when multiple URIs are configured.",
+      "fix": "Ensure the exact matching redirect_uri is supplied in the POST request to the token endpoint.",
+      "evidence": "docs",
+      "source": "https://developers.notion.com/guides/get-started/authorization"
+    },
+    {
+      "problem": "Rate limits exceeded (HTTP 429 / 529).",
+      "fix": "Read the Retry-After header and use exponential backoff with jitter.",
+      "evidence": "docs",
+      "source": "https://developers.notion.com/reference/request-limits"
+    }
+  ],
+  "agent_can": [
+    "Write application code for the OAuth redirect and token exchange flow",
+    "Set up environment variable configurations for client credentials",
+    "Implement rate-limit queues and error handling routines"
+  ],
+  "you_must": [
+    "Log into the Developer portal to create the connection and retrieve credentials",
+    "Authorize apps via the live OAuth prompt and complete page picker selections"
+  ],
+  "uncertain": [
+    "Granular scope definitions that trigger specific reviews",
+    "Privacy policy rules, required video submissions, business entity requirements, minimum user thresholds, and fees for marketplace listing",
+    "Published wait times for marketplace security reviews"
+  ],
+  "sources": [
+    {
+      "title": "Get Started Overview",
+      "url": "https://developers.notion.com/guides/get-started/overview"
+    },
+    {
+      "title": "Authorization Guide",
+      "url": "https://developers.notion.com/guides/get-started/authorization"
+    },
+    {
+      "title": "Request Limits Reference",
+      "url": "https://developers.notion.com/reference/request-limits"
+    }
+  ],
+  "slug": "notion",
+  "last_checked": "2026-11-03",
+  "origin": "Generated live by the research agent (gemini-3.5-flash-lite) - not reviewed by a person",
+  "composio": {
+    "managed_oauth": true,
+    "note": "Composio provides a managed OAuth app, so you only need your own for custom branding, scopes or quota."
+  }
+}

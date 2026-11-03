@@ -1,0 +1,103 @@
+{
+  "app": "Zoom",
+  "website": "https://developers.zoom.us/",
+  "summary": "Zoom provides APIs, webhooks, and SDKs via the Zoom App Marketplace. Developers can build OAuth apps to access Zoom data on behalf of authorized users.",
+  "verdict": {
+    "difficulty": 3,
+    "label": "Medium",
+    "time_to_first_connection": "not published",
+    "time_to_production": "not published",
+    "approval_required": "Depends on the scopes used and whether the app is published to the marketplace."
+  },
+  "prerequisites": [
+    {
+      "text": "A Zoom account with access to the Zoom App Marketplace to create an OAuth app.",
+      "evidence": "docs",
+      "source": "https://developers.zoom.us/"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Review developer documentation",
+      "detail": "Review the official Zoom developer guides and SDK documentation to plan your integration architecture.",
+      "owner": "agent",
+      "evidence": "docs",
+      "source": "https://developers.zoom.us/"
+    },
+    {
+      "title": "Log into Zoom App Marketplace",
+      "detail": "Sign in to the Zoom App Marketplace using your developer account credentials.",
+      "owner": "you",
+      "evidence": "docs",
+      "source": "https://developers.zoom.us/"
+    },
+    {
+      "title": "Create an OAuth App",
+      "detail": "Select and create an OAuth app type to obtain your client credentials and configure your redirect URIs.",
+      "owner": "you",
+      "evidence": "docs",
+      "source": "https://developers.zoom.us/docs/integrations/"
+    },
+    {
+      "title": "Configure Scopes and Endpoints",
+      "detail": "Configure the necessary API scopes and set up your backend endpoints to handle OAuth callbacks and webhook events.",
+      "owner": "both",
+      "evidence": "docs",
+      "source": "https://developers.zoom.us/docs/integrations/"
+    }
+  ],
+  "approval": {
+    "summary": "Publishing an app or using specific restricted scopes may trigger a review process by Zoom.",
+    "triggers": [
+      "Publishing to the Zoom App Marketplace",
+      "Requesting restricted or sensitive scopes"
+    ],
+    "typical_wait": "not published",
+    "evidence": "unverified",
+    "source": ""
+  },
+  "blockers": [
+    {
+      "problem": "Unconfirmed specific redirect URI rules and client secret generation details from accessible text.",
+      "fix": "Check the signed-in developer console inside the Zoom App Marketplace for explicit field requirements.",
+      "evidence": "unverified",
+      "source": ""
+    }
+  ],
+  "agent_can": [
+    "Utilize LLM-ready markdown documentation and starter repositories to draft backend logic.",
+    "Help write code for handling OAuth tokens and API requests."
+  ],
+  "you_must": [
+    "Log into the Zoom App Marketplace to create the OAuth app.",
+    "Manage client secrets and sensitive app credentials securely."
+  ],
+  "uncertain": [
+    "Account type requirements for creating an app",
+    "Exact redirect URI formatting rules",
+    "Specific scopes triggering review",
+    "Published wait times for app approval",
+    "Exact rate limits and quotas before approval"
+  ],
+  "sources": [
+    {
+      "title": "Zoom Developer Portal",
+      "url": "https://developers.zoom.us/"
+    },
+    {
+      "title": "Zoom Integrations Docs",
+      "url": "https://developers.zoom.us/docs/integrations/"
+    },
+    {
+      "title": "Zoom Internal Apps Docs",
+      "url": "https://developers.zoom.us/docs/internal-apps/"
+    }
+  ],
+  "slug": "zoom",
+  "last_checked": "2026-11-03",
+  "origin": "Generated live by the research agent (gemini-3.5-flash-lite) - not reviewed by a person",
+  "composio": {
+    "managed_oauth": true,
+    "note": "Composio provides a managed OAuth app, so you only need your own for custom branding, scopes or quota."
+  }
+}

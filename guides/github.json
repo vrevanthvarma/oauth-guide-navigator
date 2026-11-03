@@ -1,0 +1,50 @@
+{
+  "app": "GitHub",
+  "slug": "github",
+  "website": "https://github.com",
+  "last_checked": "2026-11-03",
+  "origin": "Seed guide: researched by an agent from official docs, reviewed by a person",
+  "summary": "GitHub is the easy case. Anyone with a GitHub account can register an OAuth app in a few minutes, and there is no review or approval step. The main decision is whether you want an OAuth app or a GitHub App: GitHub recommends GitHub Apps for fine-grained permissions and short-lived tokens.",
+  "verdict": {
+    "difficulty": 1,
+    "label": "Easy",
+    "time_to_first_connection": "15-30 minutes",
+    "time_to_production": "Same day (no provider review)",
+    "approval_required": "No"
+  },
+  "composio": {
+    "managed_oauth": true,
+    "note": "Composio provides a managed OAuth app for GitHub, so you only need your own app if you want your app name on the consent screen, custom scopes or your own rate-limit quota."
+  },
+  "prerequisites": [
+    {"text": "A GitHub account, or admin access to the organization that should own the app.", "evidence": "docs", "source": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app"},
+    {"text": "A public homepage URL and the callback (redirect) URL of your integration. If you use Composio custom auth, copy the callback URL Composio shows you.", "evidence": "docs", "source": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app"}
+  ],
+  "steps": [
+    {"title": "Decide: OAuth app or GitHub App", "detail": "Pick a GitHub App if you want fine-grained repository permissions and short-lived tokens; pick an OAuth app if you need enterprise-level resources or the simplest setup.", "owner": "both", "evidence": "docs", "source": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/differences-between-github-apps-and-oauth-apps"},
+    {"title": "Open Developer settings", "detail": "Settings -> Developer settings -> OAuth Apps -> New OAuth App (shown as 'Register a new application' if you have never created one).", "owner": "you", "evidence": "docs", "source": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app"},
+    {"title": "Fill in name, homepage and callback URL", "detail": "Use only public information. You can add up to 10 callback URLs. Enable Device Flow only if your agent runs where a browser redirect is not possible.", "owner": "agent", "evidence": "docs", "source": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app"},
+    {"title": "Generate a client secret", "detail": "Copy the client ID and client secret into your secrets store or your Composio custom auth config. Never commit them to code.", "owner": "you", "evidence": "docs", "source": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app"},
+    {"title": "Request only the scopes you need", "detail": "Scopes are requested at authorization time, not approved by GitHub. Asking for fewer scopes makes users and org admins more likely to approve.", "owner": "agent", "evidence": "docs", "source": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps"}
+  ],
+  "approval": {
+    "summary": "No GitHub review. Organizations can restrict third-party OAuth app access, so a user in such an organization may need an org owner to approve your app before it can see org resources.",
+    "triggers": ["Users in organizations with OAuth app access restrictions"],
+    "typical_wait": "None from GitHub; depends on each organization's owner",
+    "evidence": "docs",
+    "source": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/differences-between-github-apps-and-oauth-apps"
+  },
+  "blockers": [
+    {"problem": "Users can sign in but see no organization repositories.", "fix": "The organization restricts OAuth apps. Ask the org owner to approve the app, or switch to a GitHub App installed on the org.", "evidence": "docs", "source": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/differences-between-github-apps-and-oauth-apps"},
+    {"problem": "Hitting rate limits as usage grows.", "fix": "OAuth app rate limits do not scale with installations; GitHub App installation tokens do.", "evidence": "docs", "source": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/differences-between-github-apps-and-oauth-apps"},
+    {"problem": "One account already owns 100 OAuth apps.", "fix": "A user or organization can own up to 100 OAuth apps; delete unused ones or use another owner.", "evidence": "docs", "source": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app"}
+  ],
+  "agent_can": ["Choose between an OAuth app and a GitHub App from your use case", "Prepare the name, homepage, callback URL and scope list", "Check the finished setup against this guide"],
+  "you_must": ["Sign in to GitHub and click through Developer settings", "Generate and store the client secret", "Ask organization owners for approval where needed"],
+  "uncertain": ["Exact rate-limit numbers were not checked for this guide; see GitHub's rate-limit docs."],
+  "sources": [
+    {"title": "Creating an OAuth app - GitHub Docs", "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app"},
+    {"title": "Differences between GitHub Apps and OAuth apps", "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/differences-between-github-apps-and-oauth-apps"},
+    {"title": "Composio managed OAuth app directory", "url": "https://docs.composio.dev/toolkits/managed-auth"}
+  ]
+}

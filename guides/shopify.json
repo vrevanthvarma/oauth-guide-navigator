@@ -1,0 +1,49 @@
+{
+  "app": "Shopify",
+  "slug": "shopify",
+  "website": "https://shopify.dev",
+  "last_checked": "2026-11-03",
+  "origin": "Seed guide: researched by an agent from official docs, reviewed by a person",
+  "summary": "Shopify depends on who your users are. Building for one merchant means custom distribution with no App Store review. Building for many merchants means public distribution, which requires App Store registration (a one-time fee) and Shopify's app review. The distribution choice cannot be changed later, and personal customer data needs a separate approval for public apps.",
+  "verdict": {
+    "difficulty": 3,
+    "label": "Medium (Hard if public)",
+    "time_to_first_connection": "About 1 hour on a development store",
+    "time_to_production": "Custom: same day. Public: after app review",
+    "approval_required": "Yes, for public apps"
+  },
+  "composio": {
+    "managed_oauth": false,
+    "note": "Shopify is not in Composio's managed OAuth list, so you must bring your own app."
+  },
+  "prerequisites": [
+    {"text": "A Shopify Partner or developer account and a development store for testing.", "evidence": "docs", "source": "https://shopify.dev/docs/apps/launch/app-store-review/review-process"},
+    {"text": "For public distribution: Shopify App Store registration, which has a one-time fee.", "evidence": "docs", "source": "https://shopify.dev/docs/apps/launch/distribution"}
+  ],
+  "steps": [
+    {"title": "Choose custom or public distribution", "detail": "Custom for a specific merchant, public for many merchants. You cannot change it after selecting, so decide on the production app first.", "owner": "both", "evidence": "docs", "source": "https://shopify.dev/docs/apps/launch/distribution"},
+    {"title": "Create the app and set access scopes", "detail": "Merchants approve your scopes at install time; a few scopes also need Shopify's own approval.", "owner": "agent", "evidence": "docs", "source": "https://shopify.dev/docs/apps/build/authentication-authorization"},
+    {"title": "Request protected customer data access if needed", "detail": "Public apps need a separate approval for fields with customers' personal data.", "owner": "you", "evidence": "docs", "source": "https://shopify.dev/docs/apps/build/authentication-authorization"},
+    {"title": "Test on a development store", "detail": "Shopify expects you to find bugs on a development store before review.", "owner": "you", "evidence": "docs", "source": "https://shopify.dev/docs/apps/launch/app-store-review/review-process"},
+    {"title": "Public only: submit for app review", "detail": "Fix every issue on the App Store review page, then submit. Status moves Draft -> Submitted -> Reviewed -> Published.", "owner": "you", "evidence": "docs", "source": "https://shopify.dev/docs/apps/launch/app-store-review/review-process"}
+  ],
+  "approval": {
+    "summary": "Custom apps need no App Store review. Public apps go through Shopify's app review, which can pause for core fixes before a reviewer is assigned; some scopes and protected customer data need separate approval.",
+    "triggers": ["Public distribution", "Protected customer data", "Certain restricted access scopes"],
+    "typical_wait": "Not published on the pages read",
+    "evidence": "docs",
+    "source": "https://shopify.dev/docs/apps/launch/app-store-review/review-process"
+  },
+  "blockers": [
+    {"problem": "Picked the wrong distribution method.", "fix": "It cannot be changed; create a new app with the right method.", "evidence": "docs", "source": "https://shopify.dev/docs/apps/launch/distribution"},
+    {"problem": "Review paused for missing requirements.", "fix": "Shopify emails the required changes; fix them and click Submit fixes.", "evidence": "docs", "source": "https://shopify.dev/docs/apps/launch/app-store-review/review-process"}
+  ],
+  "agent_can": ["Recommend custom vs public distribution from your user base", "List the scopes and protected-data fields you need", "Pre-check your app against the review requirements"],
+  "you_must": ["Create the Partner account, app and development store", "Pay the App Store registration fee if public", "Submit for review and respond to the reviewer"],
+  "uncertain": ["App review duration and the exact registration fee were not stated on the pages read."],
+  "sources": [
+    {"title": "About app distribution - Shopify", "url": "https://shopify.dev/docs/apps/launch/distribution"},
+    {"title": "About the app review process - Shopify", "url": "https://shopify.dev/docs/apps/launch/app-store-review/review-process"},
+    {"title": "About app authentication - Shopify", "url": "https://shopify.dev/docs/apps/build/authentication-authorization"}
+  ]
+}

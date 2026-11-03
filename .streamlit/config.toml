@@ -1,0 +1,10 @@
+# Safe to commit: no secrets here.
+[client]
+# Visitors never see crash details (messages and tracebacks stay in the server log).
+showErrorDetails = "none"
+# Hide developer options (rerun, settings, deploy) from visitors.
+toolbarMode = "viewer"
+
+[browser]
+# Do not send usage statistics to Streamlit.
+gatherUsageStats = false

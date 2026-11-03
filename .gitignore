@@ -1,0 +1,11 @@
+# Secrets: never commit
+secrets.toml
+**/secrets.toml
+.env
+*.env
+*.key
+
+__pycache__/
+.venv/
+.claude/
+generated/_usage.json
