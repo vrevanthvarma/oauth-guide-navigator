@@ -204,3 +204,9 @@ def generate_guide(app, api_key, model=DEFAULT_MODEL, on_progress=lambda msg: No
     guide["origin"] = f"Generated live by the research agent ({model}) - not reviewed by a person"
     guide["composio"] = None
     return guide
+
+
+if __name__ == "__main__":  # the hosted deployment uses this file as its main file, so hand over to the app
+    import streamlit as st
+
+    st.navigation([st.Page("app.py")], position="hidden").run()

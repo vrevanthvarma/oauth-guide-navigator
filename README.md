@@ -122,6 +122,9 @@ Live generation spends real API credit, so a public deployment has two optional 
 Push to GitHub, create an app on Streamlit Community Cloud pointing at `app.py`, and add
 `GEMINI_API_KEY` (plus optional `ACCESS_CODE`, `DAILY_LIMIT`) under the app's Secrets.
 
+The live deployment was created with `agent.py` as its main file, and Community Cloud cannot change
+that without a new deployment, so `agent.py` hands over to `app.py` when it is run directly.
+
 ## Limitations
 
 - Seed guides were researched from official docs. No setup was attempted by hand, so nothing is
