@@ -84,6 +84,9 @@ What deploying changed:
 - **Stalled page files.** In bursts of 12 requests at a time, about 1 in 6 page files stalled for about
   a minute and then failed with a 500 from the hosting proxy (10 of 60, then 5 of 36). Another app on
   the same host served 60 of 60. In a browser this can leave the page blank or replace the lookup box
-  with an error. Reloading fixed it when tried. The cause couldn't be found from outside the host.
+  with an error. Reloading fixed it when tried. A local copy of the same code served 120 of 120 requests
+  in under 0.25 s. A second, fresh deployment stalled too (3 of 30 server checks), while 3 of Streamlit's
+  own apps answered 72 of 72 with no stalls, and Streamlit's status page showed all systems operational.
+  The cause couldn't be found from outside the host.
 - **Custom addresses.** Community Cloud doesn't allow "auth" in a custom address, so the app's address
   can't say "oauth".
