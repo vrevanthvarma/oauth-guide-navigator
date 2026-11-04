@@ -7,6 +7,12 @@ Works on Gemini's free tier (Google Search grounding is not included there):
             which pages actually loaded. Only loaded pages can be cited.
 3. Write  - Gemini turns the notes into the guide JSON (structured output).
 """
+if __name__ == "__main__":  # the hosted deployment uses this file as its main file, so hand over to the app
+    import streamlit as st  # before the heavy imports below, so pages load without them
+
+    st.navigation([st.Page("app.py")], position="hidden").run()
+    st.stop()
+
 import datetime
 import json
 import time
@@ -204,9 +210,3 @@ def generate_guide(app, api_key, model=DEFAULT_MODEL, on_progress=lambda msg: No
     guide["origin"] = f"Generated live by the research agent ({model}) - not reviewed by a person"
     guide["composio"] = None
     return guide
-
-
-if __name__ == "__main__":  # the hosted deployment uses this file as its main file, so hand over to the app
-    import streamlit as st
-
-    st.navigation([st.Page("app.py")], position="hidden").run()
