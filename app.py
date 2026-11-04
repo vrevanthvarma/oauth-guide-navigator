@@ -180,7 +180,8 @@ def show_home(guides: dict):
 
     query = st.text_input("Look up an app by name or website", placeholder="e.g. Notion, zoom.us, Xero", max_chars=80).strip()
     st.caption("Enter only an app name or website, never personal information. Live lookups are sent to "
-               "Google's Gemini API, and this site stores nothing about visitors.")
+               "Google's Gemini API. This app stores nothing about visitors, but its host, Streamlit "
+               "Community Cloud, collects its own usage data.")
     if query:
         slug = slugify(query.replace("https://", "").replace("www.", "").split(".")[0])
         hits = [g for s, g in guides.items() if slug in s or s in slug]

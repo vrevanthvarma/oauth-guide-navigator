@@ -3,7 +3,7 @@
   "slug": "github",
   "website": "https://github.com",
   "last_checked": "2026-11-03",
-  "origin": "Seed guide: researched by an agent from official docs, reviewed by a person",
+  "origin": "Seed guide: researched and checked by an AI agent against official docs - not reviewed by a person",
   "summary": "GitHub is the easy case. Anyone with a GitHub account can register an OAuth app in a few minutes, and there is no review or approval step. The main decision is whether you want an OAuth app or a GitHub App: GitHub recommends GitHub Apps for fine-grained permissions and short-lived tokens.",
   "verdict": {
     "difficulty": 1,

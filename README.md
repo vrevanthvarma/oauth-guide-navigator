@@ -6,6 +6,12 @@ steps an agent can do for you. Apps outside the library are investigated live by
 
 Built for the Composio APM Integrations take-home.
 
+**Live app:** https://oapp-guide-navigator-dr8njdcz9cyj9vx2lvvwxm.streamlit.app
+
+The guide library is open to everyone. Live generation needs an access code, which is in my
+submission and not in this repo. If the page says the app has gone to sleep, click the wake-up
+button and wait about a minute (Streamlit's free hosting sleeps after 12 hours without visitors).
+
 ## The problem, as I understood it
 
 When an agent builder's users connect an app through Composio, someone has to own the provider
@@ -48,7 +54,7 @@ agent.py             Research agent (Gemini API with the URL context tool)
 set_secrets.py       Saves the key and access code privately (masked input window)
 guide_schema.py      The guide JSON schema and Markdown export
 composio_managed.py  Composio's managed OAuth list (copied 2026-11-03)
-guides/              Seed guides (researched from official docs, reviewed by a person)
+guides/              Seed guides (researched by the coding agent from official docs, sources checked)
 generated/           Guides the agent creates at runtime
 EVIDENCE.md          What was checked, corrected and left unverified
 ```
@@ -95,10 +101,12 @@ Live generation spends real API credit, so a public deployment has two optional 
   menus from visitors.
 - **Commit guard:** `.githooks/pre-commit` blocks commits that stage `secrets.toml` or contain
   anything that looks like an API key. Turn it on once per clone: `git config core.hooksPath .githooks`.
-- **Privacy:** the app stores nothing about visitors (no accounts, no analytics, no logs of what people
-  type), and Streamlit usage statistics are turned off in `.streamlit/config.toml`. Live lookups send
-  only the app name and public documentation to Gemini; on Gemini's free tier Google may use requests
-  to improve its products, so the lookup box asks people not to type personal information.
+- **Privacy:** the app itself stores nothing about visitors (no accounts, no analytics, no logs of what
+  people type). Streamlit usage statistics are off for local runs in `.streamlit/config.toml`, but
+  Community Cloud overrides that setting and its hosting pages load their own analytics, so the hosted
+  site does collect usage data. Live lookups send only the app name and public documentation to Gemini;
+  on Gemini's free tier Google may use requests to improve its products, so the lookup box asks people
+  not to type personal information.
 - **Untrusted web content:** live guides are built from pages the agent reads, so all guide text is
   rendered as plain text (no HTML, Markdown links or LaTeX from the web), only `http(s)` links are
   shown, and a claim may only cite a documentation page that actually loaded; anything else loses its
@@ -116,10 +124,11 @@ Push to GitHub, create an app on Streamlit Community Cloud pointing at `app.py`,
 
 ## Limitations
 
-- Seed guides were researched from official docs; hand tests are listed in EVIDENCE.md, and anything
-  not tested is labelled.
+- Seed guides were researched from official docs. No setup was attempted by hand, so nothing is
+  labelled ✅ tested, and no person has reviewed the guides line by line. Check the linked sources.
 - Generated guides are only as good as the docs the agent finds; they are not reviewed by a person.
-- Generated guides are stored on the server's disk, which Streamlit Cloud can reset on restart.
+- Generated guides and the daily counter are stored on the server's disk, which Streamlit Cloud can
+  reset on restart.
 - The Composio managed list is a copy from 2026-11-03; it should come from Composio's API.
 - Live generation runs on Gemini's free tier; once its limits are used up, generation pauses until
   the next reset. A free-tier key without billing cannot be charged.
@@ -129,6 +138,7 @@ Push to GitHub, create an app on Streamlit Community Cloud pointing at `app.py`,
 
 ## Use of AI
 
-I built this with an AI coding agent (Claude Code): it drafted the code and the seed-guide research
-from official docs, and I reviewed the guides, checked the sources and made the product decisions
-described above. The live research agent is part of the product.
+I built this by directing an AI coding agent (Claude Code). It wrote the code, researched the seed
+guides from official docs and ran the checks in EVIDENCE.md. I directed the work and made the calls on
+what to ship, including the free Gemini setup and the security and privacy rules. The live research
+agent is part of the product.

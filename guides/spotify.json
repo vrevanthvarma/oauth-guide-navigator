@@ -3,7 +3,7 @@
   "slug": "spotify",
   "website": "https://developer.spotify.com",
   "last_checked": "2026-11-03",
-  "origin": "Seed guide: researched by an agent from official docs, reviewed by a person",
+  "origin": "Seed guide: researched and checked by an AI agent against official docs - not reviewed by a person",
   "summary": "Spotify looks easy but has a hard ceiling. New apps start in development mode, limited to 5 allowlisted users, and the owner needs Spotify Premium. Since 15 May 2025, Spotify accepts extended quota applications only from registered organizations with at least 250k monthly active users, so most new agent products can never leave development mode.",
   "verdict": {
     "difficulty": 4,

@@ -10,8 +10,10 @@ What was checked, what changed as a result, and what is still unverified. Date: 
 | All 21 source links opened | 21/21 returned HTTP 200 |
 | Seed guides validated against the guide schema | 5/5 valid |
 | Composio managed status compared with the managed OAuth directory | GitHub, Slack, Gmail managed; Spotify, Shopify bring-your-own |
-| Hand test: register a GitHub OAuth app | TODO - to be done before submission |
-| Hand test: create a Slack app and turn on distribution | TODO - to be done before submission |
+| Hand test: register a GitHub OAuth app | Not done, so no guide item is labelled ✅ tested |
+| Hand test: create a Slack app and turn on distribution | Not done, so no guide item is labelled ✅ tested |
+
+The coding agent ran these checks. No person has reviewed the guides line by line.
 
 ## What the research corrected
 

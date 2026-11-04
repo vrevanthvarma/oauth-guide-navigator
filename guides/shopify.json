@@ -3,7 +3,7 @@
   "slug": "shopify",
   "website": "https://shopify.dev",
   "last_checked": "2026-11-03",
-  "origin": "Seed guide: researched by an agent from official docs, reviewed by a person",
+  "origin": "Seed guide: researched and checked by an AI agent against official docs - not reviewed by a person",
   "summary": "Shopify depends on who your users are. Building for one merchant means custom distribution with no App Store review. Building for many merchants means public distribution, which requires App Store registration (a one-time fee) and Shopify's app review. The distribution choice cannot be changed later, and personal customer data needs a separate approval for public apps.",
   "verdict": {
     "difficulty": 3,

@@ -3,7 +3,7 @@
   "slug": "slack",
   "website": "https://api.slack.com",
   "last_checked": "2026-11-03",
-  "origin": "Seed guide: researched by an agent from official docs, reviewed by a person",
+  "origin": "Seed guide: researched and checked by an AI agent against official docs - not reviewed by a person",
   "summary": "Slack is medium difficulty. A new app installs only in its own workspace; to let other workspaces connect you must build an OAuth flow and turn on distribution, which needs no review. Slack Marketplace listing is optional but is reviewed, and some workspaces only allow Marketplace apps or need admin approval.",
   "verdict": {
     "difficulty": 3,

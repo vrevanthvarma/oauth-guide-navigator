@@ -3,7 +3,7 @@
   "slug": "google-gmail",
   "website": "https://developers.google.com/gmail/api",
   "last_checked": "2026-11-03",
-  "origin": "Seed guide: researched by an agent from official docs, reviewed by a person",
+  "origin": "Seed guide: researched and checked by an AI agent against official docs - not reviewed by a person",
   "summary": "Google is the hard case. Creating the OAuth client takes minutes, but most useful Gmail scopes are restricted. Before outside users can connect, Google requires app verification, and apps that access restricted data from a server need an annual security assessment by a Google-approved third party. Plan for weeks to months, not hours.",
   "verdict": {
     "difficulty": 5,
