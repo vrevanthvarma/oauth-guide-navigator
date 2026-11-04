@@ -134,8 +134,9 @@ that without a new deployment, so `agent.py` hands over to `app.py` when it's ru
 - Generated guides are only as good as the docs the agent finds, and no person reviews them.
 - Generated guides and the daily counter live on the server's disk, which Streamlit Cloud can reset on
   restart.
-- On the free hosting, some page files can stall and fail to load, which breaks part of the page until
-  you reload it (see EVIDENCE.md).
+- On the free hosting, some page files can stall and fail to load, which breaks part of the page. The
+  app detects this and reloads itself (at most 3 times), but a page that stays blank needs a manual
+  reload (see EVIDENCE.md).
 - The Composio managed list is a copy from 2026-11-03. It should come from Composio's API.
 - Live generation runs on Gemini's free tier, so once its limits are used up, generation pauses until
   the next reset. A free-tier key without billing can't be charged.

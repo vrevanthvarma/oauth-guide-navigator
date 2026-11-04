@@ -11,6 +11,7 @@ from datetime import date
 from pathlib import Path
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 from composio_managed import composio_status
 from guide_schema import EVIDENCE, OWNERS, md_text, safe_url, slugify, to_markdown
@@ -21,6 +22,26 @@ GEN_DIR.mkdir(exist_ok=True)
 EVIDENCE_ICON = {"tested": "✅", "docs": "📄", "community": "💬", "unverified": "⚠️"}
 OWNER_ICON = {"agent": "🤖", "you": "👤", "both": "🤝"}
 DIFFICULTY_COLOR = {1: "green", 2: "green", 3: "orange", 4: "red", 5: "red"}
+
+# The free host sometimes fails to deliver a page file, which leaves a widget stuck loading or replaced
+# by an import error. A reload fixes it, so do that (at most 3 times) instead of showing a broken page.
+RECOVER_FAILED_LOADS = """<script>
+const page = window.parent;
+let stuckSince = null;
+setInterval(() => {
+  const text = page.document.body.innerText;
+  const stuck = page.document.querySelector('[data-testid="stSkeleton"]');
+  stuckSince = stuck ? (stuckSince ?? Date.now()) : null;
+  const failed = text.includes("Failed to fetch dynamically imported module");
+  if (!failed && !(stuckSince && Date.now() - stuckSince > 8000)) return;
+  if (text.includes("Agent is investigating")) return;  // never interrupt a live run
+  const tries = Number(page.sessionStorage.getItem("reloads") || 0);
+  if (tries < 3) {
+    page.sessionStorage.setItem("reloads", tries + 1);
+    page.location.reload();
+  }
+}, 1000);
+</script>"""
 
 st.set_page_config(page_title="OAuth Approval Navigator", page_icon="🔑", layout="wide")
 
@@ -221,6 +242,7 @@ def show_home(guides: dict):
 
 
 with st.sidebar:
+    components.html(RECOVER_FAILED_LOADS, height=0)
     st.markdown("### How to read a guide")
     for k, label in EVIDENCE.items():
         st.markdown(f"{EVIDENCE_ICON[k]} {label}")
