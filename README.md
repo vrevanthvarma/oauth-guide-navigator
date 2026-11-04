@@ -11,6 +11,7 @@ Built for the Composio APM Integrations take-home.
 The guide library is open to everyone. Live generation needs an access code, which is in my
 submission and not in this repo. If the page says the app has gone to sleep, click the wake-up
 button and wait about a minute (Streamlit's free hosting sleeps after 12 hours without visitors).
+If the page stays blank or part of it shows an error, reload it.
 
 ## The problem, as I understood it
 
@@ -132,6 +133,8 @@ that without a new deployment, so `agent.py` hands over to `app.py` when it is r
 - Generated guides are only as good as the docs the agent finds; they are not reviewed by a person.
 - Generated guides and the daily counter are stored on the server's disk, which Streamlit Cloud can
   reset on restart.
+- On the free hosting, some page files can stall and fail to load, which breaks part of the page
+  until it is reloaded (see EVIDENCE.md).
 - The Composio managed list is a copy from 2026-11-03; it should come from Composio's API.
 - Live generation runs on Gemini's free tier; once its limits are used up, generation pauses until
   the next reset. A free-tier key without billing cannot be charged.
