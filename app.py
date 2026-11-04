@@ -5,6 +5,7 @@ Run locally:  streamlit run app.py
 import hmac
 import json
 import os
+import re
 import sys
 import traceback
 from datetime import date
@@ -59,8 +60,9 @@ def secret(name, default=None):
     """Read a setting on the server. Secrets are never sent to the browser or put in a prompt."""
     try:
         return st.secrets[name]
-    except Exception:
-        return os.environ.get(name, default)
+    except Exception:  # hosts with environment variables; a pasted value may keep its quotes or setting name
+        value = re.sub(rf"^\s*{name}\s*=\s*", "", os.environ.get(name, ""))
+        return value.strip().strip('"') or default
 
 
 def redact(text: str, key: str) -> str:
