@@ -15,6 +15,7 @@ if __name__ == "__main__":  # the hosted deployment uses this file as its main f
 
 import datetime
 import json
+import re
 import time
 from urllib.parse import urlparse
 
@@ -56,7 +57,10 @@ fees, published wait times), limits before approval, common blockers with fixes,
 agent could prepare versus what needs a signed-in human.
 
 Use only what the pages say. After each fact, put the URL of the page it came from. If the pages do
-not answer something, write UNCONFIRMED instead of guessing. Today's date is {today}."""
+not answer something, write UNCONFIRMED instead of guessing. Today's date is {today}.
+
+End with a line starting "MORE PAGES:" and up to 5 full URLs of documentation pages linked from these
+pages that would answer what is still UNCONFIRMED (OAuth, scopes, app review, publishing)."""
 
 STRUCTURE_PROMPT = """Convert these research notes about {app} into the guide JSON.
 
@@ -69,6 +73,8 @@ Rules:
   4 = review or hard limits for most uses; 5 = weeks/months of review or effectively blocked.
   Judge it by what is required before OTHER people's accounts can connect. An optional
   marketplace, directory or app-store listing does not raise difficulty; mention it in approval.
+  If the notes do not confirm a review, a limit or a block, do not assume one: use difficulty 3 with
+  the label "Unclear" and list what is missing in "uncertain". Use 5 or "Blocked" only when a page says so.
 - label: one or two words that match the difficulty, such as Easy, Medium, Hard or Blocked.
 - Be specific about time and effort; if the notes give no number, say "not published" instead
   of guessing, and add it to "uncertain".
@@ -128,16 +134,19 @@ def _read(client, model, app, urls):
 
 
 def research(client, model, app, on_progress):
-    """Up to two plan-and-read rounds. Doc URLs move over time, so if fewer than 3 pages load,
-    the second round is told which pages worked and which failed."""
-    notes, loaded, failed, hint = [], [], [], ""
-    for round_no in range(2):
-        urls = [u for u in _plan(client, model, app, retry_hint=hint) if u not in loaded and u not in failed]
+    """Up to three plan-and-read rounds. Doc URLs move over time, so if fewer than 3 pages load, the
+    next round tries pages linked from the ones that loaded and is told which pages worked and failed."""
+    notes, loaded, failed, hint, linked = [], [], [], "", []
+    for round_no in range(3):
+        urls = list(dict.fromkeys(linked + _plan(client, model, app, retry_hint=hint)))
+        urls = [u for u in urls if u not in loaded and u not in failed][:MAX_PAGES]
         if not urls:
             break
         on_progress(("Reading official docs on: " if round_no == 0 else "Looking for more pages on: ")
                     + ", ".join(sorted({urlparse(u).netloc for u in urls})))
         round_notes, round_loaded, round_failed = _read(client, model, app, urls)
+        round_notes, _, more = round_notes.partition("MORE PAGES:")
+        linked = list(dict.fromkeys(u for u in (safe_url(x) for x in re.findall(r"https?://[^\s)\]\"'<>,]+", more)) if u))
         for u in round_loaded:
             on_progress(f"Read: {u}")
         if round_loaded:  # notes from a round where nothing loaded could only come from memory
