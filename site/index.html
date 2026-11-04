@@ -119,7 +119,7 @@ function agentPanel(app) {
     }
     run.disabled = true;
     log.replaceChildren();
-    status.replaceChildren(h("div", { class: "banner" }, `The agent is investigating ${app}. This takes about 2-4 minutes.`));
+    status.replaceChildren(h("div", { class: "banner" }, `The agent is investigating ${app}. This can take a few minutes.`));
     try {
       const g = await generateGuide(app, key.value.trim(), data, (msg) => log.append(h("li", {}, msg)));
       key.value = "";
@@ -128,7 +128,7 @@ function agentPanel(app) {
       status.replaceChildren(h("div", { class: "banner err" }, e.message));
       run.disabled = false;
     }
-  } } }, `🔎 Investigate ${app} with the agent (about 2-4 minutes)`);
+  } } }, `🔎 Investigate ${app} with the agent`);
   return h("div", { class: "box", style: "margin-top:12px" },
     h("label", { htmlFor: "key" }, "Your Gemini API key"),
     h("p", { class: "muted" }, "It's free from ", h("a", { href: "https://aistudio.google.com/apikey", target: "_blank", rel: "noopener noreferrer" }, "Google AI Studio"),

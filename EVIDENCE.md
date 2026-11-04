@@ -90,5 +90,25 @@ What deploying changed:
   The cause couldn't be found from outside the host. The app now reloads itself (at most 3 times) when
   a widget stays stuck for 8 seconds or an import error appears. Both cases and the limit were tested
   by simulating them on a local copy.
+- **First-time visitors.** In 6 simulated first-time loads of the Streamlit app, 5 to 15 of the 59
+  start-up files stalled each time, and each load took 18-39 seconds. A self-reload can't help before
+  the page has started, so the main version moved to GitHub Pages.
+
+## GitHub Pages check
+
+Checked on 2026-11-04.
+
+| Check | Result |
+|---|---|
+| 6 rounds of 4 requests (page, script, data, guide link) | 24 of 24 worked, slowest 0.51 s |
+| Page in a browser | All 8 guides listed in about 2 s, with no key-like text in the page |
+| Browser agent on Calendly, real key, run from Node | 36 s, 3/5 "Unclear", 0 claims cited to docs, 7 unverified |
+| Browser agent on Dropbox, real key, run from Node | 12 s, 3/5 "Unclear", 6 claims cited to docs, 1 unverified |
+| Made-up key in a real browser | Reached Google and showed "Gemini rejected this key" |
+| Real key in a real browser | Not yet run |
+
+What this changed: the first Calendly run read 1 page and still said "5/5 Blocked". The agent now
+follows links from pages it read, and it only says "Blocked" when a page does. Otherwise it says
+"Unclear" and lists what's missing. Calendly's guide is still thin, and the label says so.
 - **Custom addresses.** Community Cloud doesn't allow "auth" in a custom address, so the app's address
   can't say "oauth".

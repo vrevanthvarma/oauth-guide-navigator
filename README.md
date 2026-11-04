@@ -6,12 +6,17 @@ agent can do for you. If an app isn't in the library, a research agent investiga
 
 I built this for the Composio APM Integrations take-home.
 
-**Live app:** https://oapp-guide-navigator-dr8njdcz9cyj9vx2lvvwxm.streamlit.app
+**Live app:** https://vrevanthvarma.github.io/oauth-guide-navigator/
 
-The guide library is open to everyone. Live generation needs an access code, which is in my
-submission and not in this repo. If the page says the app has gone to sleep, click the wake-up
-button and wait about a minute (Streamlit's free hosting sleeps after 12 hours without visitors).
-If the page stays blank or part of it shows an error, reload it.
+It's a static site on GitHub Pages, so it loads right away and never sleeps. The guide library is open
+to everyone. The live agent runs in your browser with your own free Gemini key, which stays in that
+tab and goes only to Google.
+
+**Backup app:** https://oapp-guide-navigator-dr8njdcz9cyj9vx2lvvwxm.streamlit.app
+
+This is the same agent on Streamlit's free hosting, using an access code from my submission instead of
+your own key. It can be slow to load. If it says it's asleep, click the wake-up button and wait about a
+minute. If the page stays blank or part of it shows an error, reload it.
 
 ## The problem, as I understood it
 
@@ -50,6 +55,8 @@ minutes. If you're deciding what to launch, you need that answer before you star
 ## How it works
 
 ```
+site/                GitHub Pages version: the same guides, with the agent in the browser (agent.js)
+build_site.py        Copies the guides, prompts and schema into site/data.json
 app.py               Streamlit UI: library, lookup, guide pages, live generation
 agent.py             Research agent (Gemini API with the URL context tool)
 set_secrets.py       Saves the key and access code privately (masked input window)
@@ -64,8 +71,8 @@ Live generation runs on Gemini's free tier (`gemini-3.5-flash-lite` by default, 
 in three steps:
 1. **Plan:** Gemini lists the provider's official documentation pages worth reading.
 2. **Read:** Gemini reads those pages with the URL context tool. Google fetches them and reports which
-   ones actually loaded. Doc URLs move, so if fewer than 3 pages load, a second round is told which
-   pages worked and which failed, and it suggests others.
+   ones actually loaded. Doc URLs move, so if fewer than 3 pages load, the next round tries pages linked
+   from the ones that loaded, and it's told which pages worked and which failed.
 3. **Write:** Gemini turns the notes into the guide JSON with structured output. A claim can only cite
    a page that actually loaded. Anything else gets labelled unverified.
 
@@ -73,8 +80,14 @@ Why not web search? Google Search grounding isn't included in Gemini's free tier
 a quota error), and the brief asked for no paid accounts. Reading official docs through URL context
 keeps it free, and the server itself never downloads web pages.
 
-You'll see progress live as each page is read, and a run takes about 2-4 minutes. A generated guide is
-marked "generated live, not reviewed".
+You'll see progress live as each page is read. Runs took from 12 seconds to about 3 minutes in testing.
+A generated guide is marked "generated live, not reviewed". On GitHub Pages there's no server to save
+it on, so its share link carries the whole guide, compressed.
+
+Why two versions? The first deployment on Streamlit's free hosting stalled on about 1 in 6 file requests
+(see EVIDENCE.md), so first-time visitors could get a blank page. GitHub Pages can't run Python or keep
+a key secret, so the page is static and the agent runs in the browser with the visitor's own key. The
+prompts, schema and evidence rules are shared, so both versions follow the same rules.
 
 ## Run it locally
 
@@ -94,6 +107,8 @@ live guides a day).
 
 ## Security notes
 
+- **GitHub Pages version:** it has no server and no key of mine. A visitor's key is kept only in that
+  tab's memory and sent only to Google, and all guide text is added to the page as plain text.
 - **Keys:** they're only in `.streamlit/secrets.toml` (git-ignored) or the host's secrets settings.
   Don't zip and share the project folder, since the zip would include `secrets.toml`.
 - **The key never leaves the server:** it's read with `st.secrets` on the server and sent only to
@@ -121,11 +136,12 @@ live guides a day).
 
 ## Deploy
 
-Push to GitHub, create an app on Streamlit Community Cloud pointing at `app.py`, and add
-`GEMINI_API_KEY` (plus optional `ACCESS_CODE`, `DAILY_LIMIT`) under the app's Secrets.
+**GitHub Pages:** run `py build_site.py`, commit, then `git subtree push --prefix site origin gh-pages`.
 
-The live deployment was created with `agent.py` as its main file, and Community Cloud can't change
-that without a new deployment, so `agent.py` hands over to `app.py` when it's run directly.
+**Streamlit Community Cloud:** create an app pointing at `app.py`, and add `GEMINI_API_KEY` (plus
+optional `ACCESS_CODE`, `DAILY_LIMIT`) under the app's Secrets. The backup deployment was created with
+`agent.py` as its main file, and Community Cloud can't change that without a new deployment, so
+`agent.py` hands over to `app.py` when it's run directly.
 
 ## Limitations
 
@@ -134,9 +150,10 @@ that without a new deployment, so `agent.py` hands over to `app.py` when it's ru
 - Generated guides are only as good as the docs the agent finds, and no person reviews them.
 - Generated guides and the daily counter live on the server's disk, which Streamlit Cloud can reset on
   restart.
-- On the free hosting, some page files can stall and fail to load, which breaks part of the page. The
-  app detects this and reloads itself (at most 3 times), but a page that stays blank needs a manual
-  reload (see EVIDENCE.md).
+- The agent on GitHub Pages needs the visitor's own free Gemini key, and its guides aren't added to the
+  shared library. The backup app avoids the key, but its hosting can stall.
+- On the backup app's free hosting, some page files can stall and fail to load. The app detects this and
+  reloads itself (at most 3 times), but a page that stays blank needs a manual reload (see EVIDENCE.md).
 - The Composio managed list is a copy from 2026-11-03. It should come from Composio's API.
 - Live generation runs on Gemini's free tier, so once its limits are used up, generation pauses until
   the next reset. A free-tier key without billing can't be charged.
