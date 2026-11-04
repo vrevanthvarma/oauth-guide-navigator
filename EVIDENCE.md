@@ -105,7 +105,7 @@ Checked on 2026-11-04.
 | Browser agent on Calendly, real key, run from Node | 36 s, 3/5 "Unclear", 0 claims cited to docs, 7 unverified |
 | Browser agent on Dropbox, real key, run from Node | 12 s, 3/5 "Unclear", 6 claims cited to docs, 1 unverified |
 | Made-up key in a real browser | Reached Google and showed "Gemini rejected this key" |
-| Real key in a real browser | Not yet run |
+| Real key in a real browser, on Calendly | Produced a guide |
 
 What this changed: the first Calendly run read 1 page and still said "5/5 Blocked". The agent now
 follows links from pages it read, and it only says "Blocked" when a page does. Otherwise it says
