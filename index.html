@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OAuth Approval Navigator</title>
+<meta name="description" content="Look up an app to see how hard its OAuth setup is, how long approval takes, what can block you, and what an agent can do for you.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔑</text></svg>">
+<style>
+  :root { --bg: #fff; --ink: #1b1f24; --muted: #57606a; --line: #d8dee4; --box: #f6f8fa; --accent: #1f4e8c;
+    --green: #1a7f37; --orange: #b35900; --red: #c62828; --ok-bg: #e6f4ea; --warn-bg: #fff4e0; --err-bg: #fdecea; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #0f1216; --ink: #e6e8eb; --muted: #9aa4af; --line: #2d333b; --box: #171b21;
+    --accent: #7db2f0; --green: #56c271; --orange: #f0a64a; --red: #f07a70; --ok-bg: #12291a; --warn-bg: #2d2412; --err-bg: #331a18; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 2.1rem; line-height: 1.2; margin: 0 0 12px; } h2 { font-size: 1.25rem; margin: 28px 0 10px; } h3 { font-size: 1.1rem; margin: 0 0 4px; }
+  a { color: var(--accent); } p { margin: 0 0 10px; } ul { margin: 0 0 8px; padding-left: 20px; } li { margin-bottom: 4px; }
+  .muted { color: var(--muted); font-size: .88rem; } .box { border: 1px solid var(--line); border-radius: 10px; padding: 14px; background: var(--box); }
+  input { width: 100%; font: inherit; color: inherit; background: var(--bg); padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; }
+  button { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 600; }
+  button:disabled { opacity: .6; cursor: default; } label { display: block; font-weight: 600; margin-bottom: 6px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .card { display: flex; flex-direction: column; gap: 4px; text-align: left; } .card a { text-decoration: none; color: inherit; } .card:hover { border-color: var(--accent); }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 14px 0; } .facts b { display: block; }
+  .d1, .d2 { color: var(--green); } .d3 { color: var(--orange); } .d4, .d5 { color: var(--red); } .strong { font-weight: 700; }
+  .cols { display: grid; grid-template-columns: 3fr 2fr; gap: 28px; } @media (max-width: 760px) { .cols { grid-template-columns: 1fr; } h1 { font-size: 1.7rem; } }
+  .banner { border-radius: 8px; padding: 10px 14px; margin: 12px 0; background: var(--warn-bg); } .banner.ok { background: var(--ok-bg); } .banner.err { background: var(--err-bg); }
+  .step { margin-bottom: 14px; } .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; } .row input { flex: 1 1 260px; width: auto; }
+  details { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; } summary { cursor: pointer; font-weight: 600; }
+  .log { font-size: .88rem; color: var(--muted); margin: 10px 0 0; padding: 0; list-style: none; overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+<main id="app"><p class="muted">Loading...</p></main>
+<noscript><p>This page needs JavaScript to show the guides.</p></noscript>
+<script type="module">
+import { composioStatus, generateGuide, packGuide, safeUrl, slugify, toMarkdown, unpackGuide } from "./agent.js";
+
+const EVIDENCE_ICON = { tested: "✅", docs: "📄", community: "💬", unverified: "⚠️" };
+const OWNER_ICON = { agent: "🤖", you: "👤", both: "🤝" };
+const root = document.getElementById("app");
+let data;
+
+// Builds elements. Guide text only ever goes in as text nodes, so nothing from the web can become markup.
+function h(tag, props = {}, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === "on") Object.entries(v).forEach(([name, fn]) => el.addEventListener(name, fn));
+    else if (k === "class") el.className = v;
+    else el[k] = v;
+  }
+  el.append(...kids.flat().filter((x) => x !== null && x !== undefined));
+  return el;
+}
+const bullets = (items) => h("ul", {}, items.map((x) => h("li", {}, x)));
+
+function evidence(item) {
+  const url = safeUrl(item.source);
+  return h("p", { class: "muted" }, `${EVIDENCE_ICON[item.evidence]} ${data.evidence[item.evidence]}`,
+    url ? [" - ", h("a", { href: url, target: "_blank", rel: "noopener noreferrer" }, "source")] : null);
+}
+
+function go(url) {
+  history.pushState(null, "", url);
+  route();
+}
+
+function showGuide(g, shareUrl) {
+  const v = g.verdict, a = g.approval, c = g.composio || composioStatus(g.app, data);
+  const fact = (label, value, cls = "") => h("div", { class: "box" }, h("div", { class: "muted" }, label), h("div", { class: cls }, value));
+  document.title = `${g.app} OAuth guide`;
+  root.replaceChildren(
+    h("button", { on: { click: () => go(location.pathname) } }, "← All guides"),
+    h("h1", { style: "margin-top:16px" }, `🔑 ${g.app}`),
+    h("p", { class: "muted" }, `${g.origin || ""} · last checked ${g.last_checked || "n/a"}`),
+    h("p", {}, g.summary),
+    h("div", { class: "facts" },
+      fact("Difficulty", `${v.difficulty}/5 · ${v.label}`, `strong d${v.difficulty}`),
+      fact("First test connection", v.time_to_first_connection),
+      fact("Ready for real users", v.time_to_production),
+      fact("Provider approval", v.approval_required)),
+    h("div", { class: c.managed_oauth ? "banner ok" : "banner" }, h("b", {}, "Composio: "), c.note),
+    h("div", { class: "cols" },
+      h("div", {},
+        h("h2", {}, "Before you start"), g.prerequisites.map((p) => [h("p", { style: "margin-bottom:0" }, `• ${p.text}`), evidence(p)]),
+        h("h2", {}, "Steps"), g.steps.map((s, i) => h("div", { class: "step" },
+          h("div", {}, h("b", {}, `${i + 1}. ${s.title}`), ` · ${OWNER_ICON[s.owner]} ${data.owners[s.owner]}`), h("div", {}, s.detail), evidence(s))),
+        h("h2", {}, "If you get stuck"), g.blockers.map((b) => h("details", {}, h("summary", {}, b.problem), h("p", {}, b.fix), evidence(b)))),
+      h("div", {},
+        h("h2", {}, "Approval"), h("div", { class: "box" }, h("p", {}, a.summary), h("p", {}, h("b", {}, "Typical wait: "), a.typical_wait),
+          a.triggers.length ? h("p", {}, h("b", {}, "Triggered by: "), a.triggers.join("; ")) : null, evidence(a)),
+        h("h2", {}, "🤖 What an agent can do"), bullets(g.agent_can),
+        h("h2", {}, "👤 Where you take over"), bullets(g.you_must),
+        g.uncertain.length ? [h("h2", {}, "⚠️ Not verified"), bullets(g.uncertain)] : null,
+        h("h2", {}, "Sources"), h("ul", {}, g.sources.filter((s) => safeUrl(s.url)).map((s) =>
+          h("li", {}, h("a", { href: safeUrl(s.url), target: "_blank", rel: "noopener noreferrer" }, s.title)))))),
+    h("h2", {}, "Share this guide"),
+    h("div", { class: "row" },
+      h("input", { value: shareUrl, readOnly: true, ariaLabel: "Share link", on: { focus: (e) => e.target.select() } }),
+      h("button", { on: { click: async (e) => { await navigator.clipboard.writeText(shareUrl); e.target.textContent = "Copied"; } } }, "Copy link"),
+      h("button", { on: { click: () => {
+        const link = h("a", { href: URL.createObjectURL(new Blob([toMarkdown(g, data)], { type: "text/markdown" })), download: `${g.slug}-oauth-guide.md` });
+        link.click();
+        URL.revokeObjectURL(link.href);
+      } } }, "Download as Markdown")));
+  window.scrollTo(0, 0);
+}
+
+function agentPanel(app) {
+  const key = h("input", { type: "password", id: "key", autocomplete: "off", placeholder: "Your Gemini API key" });
+  const log = h("ul", { class: "log" });
+  const status = h("div");
+  const run = h("button", { class: "primary", on: { click: async () => {
+    if (!key.value.trim()) {
+      status.replaceChildren(h("div", { class: "banner err" }, "Enter a Gemini API key first."));
+      return;
+    }
+    run.disabled = true;
+    log.replaceChildren();
+    status.replaceChildren(h("div", { class: "banner" }, `The agent is investigating ${app}. This takes about 2-4 minutes.`));
+    try {
+      const g = await generateGuide(app, key.value.trim(), data, (msg) => log.append(h("li", {}, msg)));
+      key.value = "";
+      go(`${location.pathname}#g=${await packGuide(g)}`);
+    } catch (e) {
+      status.replaceChildren(h("div", { class: "banner err" }, e.message));
+      run.disabled = false;
+    }
+  } } }, `🔎 Investigate ${app} with the agent (about 2-4 minutes)`);
+  return h("div", { class: "box", style: "margin-top:12px" },
+    h("label", { htmlFor: "key" }, "Your Gemini API key"),
+    h("p", { class: "muted" }, "It's free from ", h("a", { href: "https://aistudio.google.com/apikey", target: "_blank", rel: "noopener noreferrer" }, "Google AI Studio"),
+      ". It stays in this tab and goes only to Google. This site has no server and stores nothing."),
+    key, h("div", { style: "margin-top:10px" }, run), status, log,
+    h("p", { class: "muted", style: "margin:10px 0 0" }, "No key? The ", h("a", { href: data.hostedApp, target: "_blank", rel: "noopener noreferrer" }, "backup hosted app"),
+      " runs the same agent with an access code, but its free hosting can be slow to load."));
+}
+
+function showHome() {
+  document.title = "OAuth Approval Navigator";
+  const results = h("div");
+  const input = h("input", { id: "lookup", maxLength: 80, placeholder: "e.g. Notion, zoom.us, Xero", on: { input: () => {
+    const query = input.value.trim();
+    results.replaceChildren();
+    if (!query) return;
+    const slug = slugify(query.replace(/^https?:\/\//, "").replace("www.", "").split(".")[0]);
+    const hits = data.guides.filter((g) => g.slug.includes(slug) || slug.includes(g.slug));
+    if (hits.length) results.append(h("p", { style: "margin:12px 0 6px" }, "In the library:"),
+      h("div", { class: "row" }, hits.map((g) => h("button", { on: { click: () => go(`?guide=${g.slug}`) } }, `Open the ${g.app} guide`))));
+    results.append(agentPanel(query));
+  } } });
+  root.replaceChildren(
+    h("h1", {}, "🔑 OAuth Approval Navigator"),
+    h("p", {}, "Before your agent's users can connect an app, you may need your own OAuth app from that provider, and some providers make you wait weeks for approval. Look up an app to see how hard it is, how long it takes, what can block you, and which parts an agent can do for you."),
+    h("label", { htmlFor: "lookup", style: "margin-top:16px" }, "Look up an app by name or website"), input,
+    h("p", { class: "muted", style: "margin-top:6px" }, "Enter only an app name or website, never personal information."), results,
+    h("h2", {}, "Guide library"),
+    h("p", { class: "muted" }, Object.entries(data.evidence).map(([k, label]) => `${EVIDENCE_ICON[k]} ${label}`).join("  ·  "), h("br"),
+      Object.entries(data.owners).map(([k, label]) => `${OWNER_ICON[k]} ${label}`).join("  ·  ")),
+    h("div", { class: "grid" }, [...data.guides].sort((a, b) => a.verdict.difficulty - b.verdict.difficulty).map((g) =>
+      h("div", { class: "box card" },
+        h("h3", {}, h("a", { href: `?guide=${g.slug}`, on: { click: (e) => { e.preventDefault(); go(`?guide=${g.slug}`); } } }, g.app)),
+        h("div", { class: `strong d${g.verdict.difficulty}` }, `${g.verdict.label} · ${g.verdict.difficulty}/5`),
+        h("div", { class: "muted" }, `Ready for real users: ${g.verdict.time_to_production}`),
+        g.origin.includes("Generated") ? h("div", { class: "muted" }, "🤖 Generated live, not reviewed") : null,
+        h("div", { style: "margin-top:auto;padding-top:8px" }, h("button", { on: { click: () => go(`?guide=${g.slug}`) } }, "Open guide"))))),
+    h("p", { class: "muted", style: "margin-top:24px" }, "Built for the Composio APM Integrations take-home. Guides can be wrong; check the linked sources. ",
+      h("a", { href: data.repo, target: "_blank", rel: "noopener noreferrer" }, "Source code")));
+}
+
+async function route() {
+  const pack = location.hash.match(/^#g=(.+)$/);
+  if (pack) {
+    try {
+      return showGuide(await unpackGuide(pack[1]), location.href);
+    } catch {
+      root.replaceChildren(h("div", { class: "banner err" }, "This share link is damaged."));
+      return;
+    }
+  }
+  const slug = new URLSearchParams(location.search).get("guide");
+  const g = data.guides.find((x) => x.slug === slug);
+  if (g) return showGuide(g, location.href);
+  showHome();
+}
+
+try {
+  data = await (await fetch("data.json")).json();
+  addEventListener("popstate", route);
+  addEventListener("hashchange", route);
+  await route();
+} catch {
+  root.replaceChildren(h("div", { class: "banner err" }, "The guides could not load. Please reload the page."));
+}
+</script>
+</body>
+</html>
